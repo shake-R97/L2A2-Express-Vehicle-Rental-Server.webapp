@@ -1,8 +1,9 @@
 import {Pool} from "pg";
+import config from ".";
 
 // db
 export const pool = new Pool({
-    connectionString: `${process.env.CONNECTION_STR}`
+    connectionString: `${config.connection_str}`
 })
 
 
@@ -39,8 +40,9 @@ const initDb = async ()=>{
            rent_start_date DATE NOT NULL,
            rent_end_date DATE NOT NULL,
            CHECK (rent_end_date > rent_start_date),
-           total_price NUMERIC NOT NULL CHECK (total_price > 0)
-           status VARCHAR(50) NOT NULL DEFAULT "active"
+           total_price NUMERIC NOT NULL CHECK (total_price > 0),
+           status VARCHAR(50) NOT NULL
+           CHECK (status IN ('active', 'completed', 'cancelled')) DEFAULT 'active'
            )
         `)    
 }
