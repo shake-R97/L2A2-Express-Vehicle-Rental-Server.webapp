@@ -11,8 +11,8 @@ const auth = (...roles: string[]) => {
             console.log({ authToken: token });
 
             if (!token) {
-                return res.status(500).json({
-                    status: "Wasted ? You don't have toke",
+                return res.status(401).json({
+                    status: "Wasted ? You don't have token",
                     message: "you are not allowed!!"
                 })
             }
