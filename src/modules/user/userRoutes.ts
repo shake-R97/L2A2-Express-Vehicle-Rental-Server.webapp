@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/users', auth("admin"), userControllers.getUser)
 
-router.get('/get/:id', userControllers.getSpecificUser)
+// router.get('/get/:id', userControllers.getSpecificUser)
 
 router.put('/users/:userId', auth("admin", "customer"), userControllers.updateUserData)
 

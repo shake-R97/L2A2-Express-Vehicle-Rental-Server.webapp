@@ -4,9 +4,9 @@ A secure and scalable backend API for managing vehicle rentals, user authenticat
 
 Built using modern backend technologies with TypeScript for strong type safety and PostgreSQL for reliable data management.
 
-🌍 Live Deployment: https://your-vercel-link.vercel.app
+🌍 Live Deployment: https://l2-a2-express-vehicle-rental-server.vercel.app/
 
-🔗 GitHub Repository: https://github.com/your-username/vehicle-rental-app
+🔗 GitHub Repository: https://github.com/shake-R97/L2A2-Express-Vehicle-Rental-Server.webapp/tree/main
 
 
 
@@ -173,9 +173,10 @@ PUT /api/v1/bookings/:bookingId (Role-based)
 
 📤 Submission ->
 
-GitHub Repo: https://github.com/your-username/vehicle-rental-app
+GitHub Repo: https://github.com/shake-R97/L2A2-Express-Vehicle-Rental-Server.webapp/tree/main
 
-Live Deployment: https://your-vercel-link.vercel.app
+
+Live Deployment: https://l2-a2-express-vehicle-rental-server.vercel.app/
 
 👨‍💻 Author ->
 
