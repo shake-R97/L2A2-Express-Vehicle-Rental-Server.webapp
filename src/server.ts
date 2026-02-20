@@ -2,6 +2,9 @@ import express, { Request, Response } from 'express';
 import initDb from './config/db';
 import config from './config';
 import { userRoutes } from './modules/user/userRoutes';
+import { authRoutes } from './modules/authenticate/authRoutes';
+import { vehicleRoutes } from './modules/vehicle/vehicleRouter';
+import { bookingRoutes } from './modules/booking/bookingRoutes';
 
 
 
@@ -20,7 +23,19 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Powering Up Your Vehicles$$')
 })
 
-app.use('/user', userRoutes)
+
+// user crud
+app.use('/api/v1', userRoutes)
+
+
+// auth routes
+app.use('/api/v1/auth', authRoutes)
+
+// Vehicle routes
+app.use('/api/v1/vehicles', vehicleRoutes)
+
+// bookingRoutes
+app.use('/api/v1', bookingRoutes)
 
 
 // app.post("/", (req: Request , res: Response)=>{

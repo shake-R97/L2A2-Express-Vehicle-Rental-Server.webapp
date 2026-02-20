@@ -1,26 +1,8 @@
 import { Request, Response } from "express";
 import { Result } from "pg";
 import { userServices } from "./userServices";
+import { JwtPayload } from "jsonwebtoken";
 
-const createUser = async(req: Request, res: Response) => {
-
-    try {
-
-        const result =  await userServices.createUser(req.body);
-
-        res.status(201).json({
-            success: true,
-            message: 'User Created Successfully',
-            data: result.rows[0] 
-        })
-        
-    } catch (err: any) {
-        res.status(500).json({
-            success: false,
-            message: err.message,
-        })
-    }
-}
 
 const getUser = async (req: Request , res: Response) => {
      
@@ -65,12 +47,13 @@ const getSpecificUser = async (req: Request , res: Response)=> {
 
 const updateUserData = async (req: Request , res: Response)=> {
 
-    console.log( req.body);
-    const userId = req.params.id;
+
+    const userId = req.params.userId;
+    const currentUser = req.user as JwtPayload;
 
     try {
 
-        const result =  await userServices.updateUserData(req.body, userId as string);
+        const result =  await userServices.updateUserData(req.body, userId as string, currentUser);
 
         res.status(200).json({
             success: true,
@@ -90,7 +73,7 @@ const updateUserData = async (req: Request , res: Response)=> {
 
 const deleteUser = async (req: Request , res: Response)=> {
 
-    const userId = req.params.id;
+    const userId = req.params.userId;
 
     try {
 
@@ -99,7 +82,7 @@ const deleteUser = async (req: Request , res: Response)=> {
 
         res.status(200).json({
             success: true,
-            message: `Users id: ${userId}, data has deleted Successfully`, 
+            message: `Users id: ${userId}, has deleted Successfully`, 
         })
         
     } catch (err: any) {
@@ -111,7 +94,6 @@ const deleteUser = async (req: Request , res: Response)=> {
 }
 
 export const userControllers = {
-    createUser,
     getUser,
     getSpecificUser,
     updateUserData,
