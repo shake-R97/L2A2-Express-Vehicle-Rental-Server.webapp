@@ -41,7 +41,7 @@ const getBooking = async (req: Request, res: Response) => {
             })
         }
 
-        res.status(201).json({
+        res.status(200).json({
             status: 'true',
             message: 'Get booked Vehicle successfully',
             result: result.rows

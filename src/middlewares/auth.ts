@@ -7,13 +7,23 @@ const auth = (...roles: string[]) => {
     return async (req: Request, res: Response, next: NextFunction) => {
 
         try {
-            const token = req.headers.authorization;
-            console.log({ authToken: token });
+            const authHeader = req.headers.authorization;
+            console.log({ authToken: authHeader });
 
-            if (!token) {
+            if (!authHeader) {
                 return res.status(401).json({
-                    status: "Wasted ? You don't have token",
-                    message: "you are not allowed!!"
+                    status: "Failed",
+                    message: "You don't have token!!"
+                })
+            }
+
+            // removing the bearer
+
+            const token = authHeader.split(" ")[1];
+
+            if(!token){
+                return res.status(401).json({
+                    message: 'Invalid token format or missing Auth Bearer'
                 })
             }
 
@@ -26,16 +36,15 @@ const auth = (...roles: string[]) => {
             if(roles.length && !roles.includes(decoded.role)){
                 return res.status(401).json({
                     message:'You are not Authorized to go there',
-                    error: 'Unauthorized Go Back'
                 })
             }
 
             next();
 
         } catch (err: any) {
-            res.status(500).json({
+            res.status(401).json({
                 status: 'false',
-                message: err.message
+                message: 'Invalid or expired token'
             })
         }
     }
