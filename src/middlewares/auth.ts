@@ -10,10 +10,10 @@ const auth = (...roles: string[]) => {
             const authHeader = req.headers.authorization;
             console.log({ authToken: authHeader });
 
-            if (!authHeader) {
+            if (!authHeader || !authHeader.startsWith("Bearer ")) {
                 return res.status(401).json({
                     status: "Failed",
-                    message: "You don't have token!!"
+                    message: "No token found or Authorization header must be Bearer token"
                 })
             }
 

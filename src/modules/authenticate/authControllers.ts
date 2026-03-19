@@ -3,18 +3,18 @@ import { authServices } from "./authServices";
 import { userServices } from "../user/userServices";
 
 
-const signUpUser = async(req: Request, res: Response) => {
+const signUpUser = async (req: Request, res: Response) => {
 
     try {
 
-        const result =  await authServices.signUpUser(req.body);
+        const result = await authServices.signUpUser(req.body);
 
         res.status(201).json({
             success: true,
             message: 'User registered Successfully',
-            data: result.rows[0] 
+            data: result.rows[0]
         })
-        
+
     } catch (err: any) {
         res.status(500).json({
             success: false,
@@ -41,9 +41,7 @@ const loginUser = async (req: Request, res: Response) => {
     } catch (err: any) {
         res.status(500).json({
             success: false,
-            message: err.message,
-            message2: 'You are not a real BlackHat',
-            caution: 'Type the Original Password or Email otherwise Shots will be taken against you'
+            message: err.message
         })
     }
 }

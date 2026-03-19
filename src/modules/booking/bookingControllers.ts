@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { bookingServices } from "./bookingServices";
+import { JwtPayload } from "jsonwebtoken";
 
 const addBooking = async (req: Request, res: Response) => {
     const body = req.body;
@@ -24,7 +25,9 @@ const addBooking = async (req: Request, res: Response) => {
 
 const getBooking = async (req: Request, res: Response) => {
 
-    if (!req.user) {
+    const user = req.user as JwtPayload;
+
+    if (!user) {
         return res.status(404).json({
             status: false,
             message: "user not found please login"
@@ -32,19 +35,21 @@ const getBooking = async (req: Request, res: Response) => {
     }
 
     try {
-        const result = await bookingServices.getBooking(req.user);
+        const result = await bookingServices.getBooking(user);
 
-        if (result.rows.length === 0) {
+        if (result.length === 0) {
             return res.status(404).json({
                 status: 'false',
                 message: "No data found , Please Book a car first to see the bookings"
             })
         }
 
+        const message = user.role === "admin" ? "Bookings retrieved successfully" : "Your bookings retrieved successfully"
+
         res.status(200).json({
             status: 'true',
-            message: 'Get booked Vehicle successfully',
-            result: result.rows
+            message,
+            data: result
         })
 
     } catch (err: any) {

@@ -7,10 +7,10 @@ const router = Router();
 router.post('/', auth('admin'), vehiclesControllers.addVehicles)
 
 
-router.get('/', auth("admin","customer"), vehiclesControllers.getVehicles)
+router.get('/', vehiclesControllers.getVehicles)
 
 
-router.get('/:vehicleId', auth("admin", "customer"), vehiclesControllers.getSpecificVehicles)
+router.get('/:vehicleId', vehiclesControllers.getSpecificVehicles)
 
 
 router.put('/:vehicleId' , auth("admin"), vehiclesControllers.updateVehicles)

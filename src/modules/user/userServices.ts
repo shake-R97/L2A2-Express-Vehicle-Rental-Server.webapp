@@ -28,7 +28,7 @@ const updateUserData = async (payload: Record<string, unknown>, userId: string, 
         throw new Error ('User not found');
     }
 
-    let {name, email, password, phone} = payload;
+    let {name, email, password, phone, role} = payload;
 
     if(password){
         const saltRound = 10;
@@ -38,14 +38,20 @@ const updateUserData = async (payload: Record<string, unknown>, userId: string, 
     }
 
     
-    const result = await pool.query(`UPDATE users SET name=$1, email=$2, password=$3, phone=$4 WHERE id=$5 RETURNING id, name, email, phone, role`,[name ?? userCheck.rows[0].name, email ?? userCheck.rows[0].email, password, phone ?? userCheck.rows[0].phone, userId]);
+    const result = await pool.query(`UPDATE users SET name=$1, email=$2, password=$3, phone=$4, role=$5 WHERE id=$6 RETURNING id, name, email, phone, role`,[name ?? userCheck.rows[0].name, email ?? userCheck.rows[0].email, password, phone ?? userCheck.rows[0].phone, role ?? userCheck.rows[0].role, userId]);
 
     return result;
 }
 
 const deleteUser = async (userId: string)=> {
 
-    const bookingStatus = await pool.query(`SELECT 1 FROM bookings WHERE customer_id = $1 LIMIT 1`,[userId])
+    const isValidUser = await pool.query(`SELECT * FROM  users WHERE id=$1`,[userId]);
+
+    if(!isValidUser.rowCount){
+        throw new Error(`User id: ${userId} does not exist`)
+    }
+
+    const bookingStatus = await pool.query(`SELECT 1 FROM bookings WHERE customer_id = $1 AND status = 'active' LIMIT 1`,[userId])
 
     
     if(bookingStatus.rows.length > 0){

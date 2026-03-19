@@ -71,14 +71,54 @@ const addBooking = async (payload: Record<string, unknown>) => {
 
 const getBooking = async (user: JwtPayload) => {
 
+    let result;
+
     if (user.role === "admin") {
-        const result = await pool.query(`SELECT * FROM bookings`);
-        return result;
+        result = await pool.query(`SELECT 
+            b.*,
+            u.name AS customer_name,
+            u.email AS customer_email,
+            v.vehicle_name,
+            v.registration_number
+            FROM bookings b
+            JOIN users u ON b.customer_id = u.id
+            JOIN vehicles v ON b.vehicle_id = v.id`
+        );
+
+    } else {
+        result = await pool.query(`SELECT 
+        b.*,
+        u.name AS customer_name,
+        u.email AS customer_email,
+        v.vehicle_name,
+        v.registration_number
+      FROM bookings b
+      JOIN users u ON b.customer_id = u.id
+      JOIN vehicles v ON b.vehicle_id = v.id
+      WHERE b.customer_id = $1`, [user.id]);
+
     }
 
-    const result = await pool.query(`SELECT * FROM bookings WHERE customer_id=$1`, [user.id]);
+    const bookings = result.rows.map(row => ({
+        id: row.id,
+        customer_id: row.customer_id,
+        vehicle_id: row.vehicle_id,
+        rent_start_date: row.rent_start_date,
+        rent_end_date: row.rent_end_date,
+        total_price: row.total_price,
+        status: row.status,
+        customer: {
+            name: row.customer_name,
+            email: row.customer_email
+        },
+        vehicle: {
+            vehicle_name: row.vehicle_name,
+            registration_number: row.registration_number
+        }
+    }));
 
-    return result;
+
+    return bookings;
 
 }
 
