@@ -35,7 +35,8 @@ const auth = (...roles: string[]) => {
 
             if(roles.length && !roles.includes(decoded.role)){
                 return res.status(401).json({
-                    message:'You are not Authorized to go there',
+                    status: 'Unauthorized',
+                    message:'"Sorry" But you are not Authorized for that',
                 })
             }
 

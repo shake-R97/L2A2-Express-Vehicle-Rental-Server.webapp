@@ -40,21 +40,30 @@ const updateVehicles = async (payload: Record<string, unknown>, vehicleId: strin
 }
 
 
-const deleteVehicle = async (vehicleId: string)=> {
+const deleteVehicle = async (vehicleId: string) => {
 
+    const vehicleResult = await pool.query(
+        `SELECT availability_status FROM vehicles WHERE id = $1`,
+        [vehicleId]
+    );
 
-    const availabilityInfo = await pool.query(`SELECT  availability_status FROM vehicles WHERE id = $1`,[vehicleId])
-
-    const checkAvailability = availabilityInfo.rows[0].availability_status;
-
-    if(checkAvailability === 'booked'){
-        throw new Error("Cannot Delete the Vehicle because it marked as booked")
+    if (vehicleResult.rowCount === 0) {
+        throw new Error("Vehicle does not exist or invalid ID");
     }
-    
-    const result = await pool.query(`DELETE FROM vehicles WHERE id = $1 RETURNING *`,[vehicleId]);
+
+    const availabilityStatus = vehicleResult.rows[0].availability_status;
+
+    if (availabilityStatus === 'booked') {
+        throw new Error("Cannot delete the vehicle because it is booked");
+    }
+
+    const result = await pool.query(
+        `DELETE FROM vehicles WHERE id = $1 RETURNING *`,
+        [vehicleId]
+    );
 
     return result;
-}
+};
 
 export const vehicleServices = {
     addVehicles,
