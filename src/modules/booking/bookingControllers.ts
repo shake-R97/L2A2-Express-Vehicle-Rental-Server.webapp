@@ -89,8 +89,7 @@ const updateBookingStatus = async (req: Request, res: Response) => {
             res.status(200).json({
                 success: true,
                 message: "Booking Cancelled successfully",
-                data: result.booking
-            })
+                data: result.booking})
         }
 
         if (status === 'returned') {
@@ -99,7 +98,9 @@ const updateBookingStatus = async (req: Request, res: Response) => {
                 message: "Booking Marked as returned. Vehicle is now available",
                 data: {
                     ...result.booking,
-                    vehicle: result.vehicle
+                    vehicle:{ 
+                     "availability_status": result.vehicle
+                    }
                 }
             })
         }

@@ -10,6 +10,14 @@ const addBooking = async (payload: Record<string, unknown>) => {
 
         await client.query('BEGIN');
 
+        //  auto-return expired bookings
+        await client.query(`
+    UPDATE bookings
+    SET status = 'returned'
+    WHERE rent_end_date < NOW()
+    AND status = 'booked'
+`);
+
         const { customer_id, vehicle_id, rent_start_date, rent_end_date } = payload;
 
         // getting the vehicle data form db
@@ -71,6 +79,17 @@ const addBooking = async (payload: Record<string, unknown>) => {
 
 const getBooking = async (user: JwtPayload) => {
 
+    //fix expired bookings
+    const autoReturnExpiredBookings = async () => {
+        await pool.query(`
+    UPDATE bookings
+    SET status = 'returned'
+    WHERE rent_end_date < NOW()
+    AND status = 'booked'
+`);
+
+    };
+
     let result;
 
     if (user.role === "admin") {
@@ -130,6 +149,16 @@ const updateBookingStatus = async (status: string, user: JwtPayload, bookingId: 
     try {
         await client.query("BEGIN")
 
+
+        // auto-return expired bookings
+        await client.query(`
+    UPDATE bookings
+    SET status = 'returned'
+    WHERE rent_end_date < NOW()
+    AND status = 'booked'
+`);
+
+
         const bookingRes = await client.query(`SELECT * FROM bookings WHERE id = $1`, [bookingId]);
 
         if (bookingRes.rows.length === 0) {
@@ -162,12 +191,14 @@ const updateBookingStatus = async (status: string, user: JwtPayload, bookingId: 
 
         let vehicleAvailabilityStatus = null;
 
-        if (status === 'returned' || status === 'cancelled') {
-            const updateVehicle = await client.query(`UPDATE vehicles SET availability_status = 'available' WHERE id = $1 RETURNING availability_status`, [booking.vehicle_id]);
+        const vehicleRes = await client.query(`
+    UPDATE vehicles
+    SET availability_status = 'available'
+    WHERE id = $1 RETURNING availability_status
+`, [booking.vehicle_id]);
 
-            vehicleAvailabilityStatus = updateVehicle.rows[0];
-        }
-
+           
+        vehicleAvailabilityStatus = vehicleRes.rows[0]?.availability_status;
 
 
         await client.query('COMMIT');
