@@ -79,16 +79,24 @@ const addBooking = async (payload: Record<string, unknown>) => {
 
 const getBooking = async (user: JwtPayload) => {
 
-    //fix expired bookings
-    const autoReturnExpiredBookings = async () => {
+    //auto update expired bookings
         await pool.query(`
     UPDATE bookings
     SET status = 'returned'
     WHERE rent_end_date < NOW()
-    AND status = 'booked'
+    AND status = 'active'
 `);
 
-    };
+// auto update vehicle availability
+await pool.query(`
+    UPDATE vehicles v
+    SET availability_status = 'available'
+    WHERE NOT EXISTS (
+        SELECT 1 FROM bookings b
+        WHERE b.vehicle_id = v.id
+        AND b.status = 'active'
+    )
+`);
 
     let result;
 
