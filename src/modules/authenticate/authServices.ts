@@ -43,7 +43,13 @@ const loginUser = async (email: string, password: string) => {
 
     console.log({ token });
 
-    return [{ token, user }];
+    return [{ token, user:{
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role
+    } }];
 
 
 }
